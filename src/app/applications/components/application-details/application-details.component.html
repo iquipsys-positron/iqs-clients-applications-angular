@@ -1,0 +1,152 @@
+<pip-document-layout>
+    <pip-document-content>
+        <div>
+            <mat-progress-bar mode="indeterminate" *ngIf="loading" class="pip-loading"></mat-progress-bar>
+
+            <div fxLayout>
+                <div fxFlex>
+                    {{ updateTitleText }}
+                </div>
+
+                <div>
+                    <button mat-button [matMenuTriggerFor]="menuLang" style="padding-right: 0">
+                        {{ ln | translate }}
+                        <mat-icon>arrow_drop_down</mat-icon>
+                    </button>
+                    <mat-menu #menuLang="matMenu">
+                        <button *ngFor="let language of languages" mat-menu-item (click)="changeLn(language )">
+                            {{ language | translate }}
+                            <mat-icon *ngIf="language == ln" style="margin-bottom: 10px">check</mat-icon>
+                        </button>
+                    </mat-menu>
+                </div>
+
+            </div>
+
+            <mat-error *ngIf="error" class="error-container">
+                {{ getErrorMessage(error) }}
+            </mat-error>
+
+            <form fxLayout="column" fxLayoutGap="16px" [formGroup]="form">
+                <div fxLayout="column" fxLayoutGap="8px">
+                    <mat-form-field>
+                        <input matInput type="text" id="id" name="id" formControlName="id" required />
+                        <mat-placeholder>
+                            <span translate>APP.EDIT.IDENTIFICATOR.LABEL</span>
+                        </mat-placeholder>
+                        <mat-error *ngIf="hasError('id', 'required')">
+                            {{ 'APP.EDIT.ERROR.IDENTIFICATOR.REQUIRED' | translate }}
+                        </mat-error>
+                    </mat-form-field>
+                    <div formArrayName="translatable">
+                        <!-- <div *ngFor="let group of localeFormArray | langFilter:languages:ln ; let i = index;" > -->
+                        <div *ngFor="let group of localeFormArray; let i = index;">
+                            <div [formGroupName]="i" fxLayout="column" *ngIf="languages[i]===ln">
+                                <mat-form-field>
+                                    <input matInput type="text" [id]="'name_'+languages[i]" name="name" formControlName="name"
+                                        required />
+                                    <mat-placeholder>
+                                        <span translate>APP.EDIT.NAME.LABEL </span><span>[{{languages[i]}}]</span>
+                                    </mat-placeholder>
+                                    <mat-error *ngIf="hasError('name', 'required', 'translatable', i)">
+                                        {{ 'APP.EDIT.ERROR.NAME.REQUIRED' | translate }}
+                                    </mat-error>
+                                    <div class="multilang-hint mat-error" *ngIf="hasMultilanguageHint('name', 'required', 'translatable', i)">
+                                        {{ 'APP.EDIT.ERROR.NAME.MULTILANG.REQUIRED' | translate }}
+                                    </div>
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <input matInput type="text" [id]="'description_'+languages[i]" name="description"
+                                        formControlName="description" />
+                                    <mat-placeholder>
+                                        <span translate>APP.EDIT.DESCRIPTION.LABEL </span><span>[{{languages[i]}}]</span>
+                                    </mat-placeholder>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+
+                    <mat-form-field>
+                        <input matInput type="text" id="product" name="product" formControlName="product" required />
+                        <mat-placeholder>
+                            <span translate>APP.EDIT.PRODUCT.LABEL</span>
+                        </mat-placeholder>
+                        <mat-error *ngIf="hasError('product', 'required')">
+                            {{ 'APP.EDIT.ERROR.PRODUCT.REQUIRED' | translate }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <input matInput type="text" id="group" name="group" formControlName="group" required />
+                        <mat-placeholder>
+                            <span translate>APP.EDIT.GROUP.LABEL</span>
+                        </mat-placeholder>
+                        <mat-error *ngIf="hasError('group', 'required')">
+                            {{ 'APP.EDIT.ERROR.GROUP.REQUIRED' | translate }}
+                        </mat-error>
+                    </mat-form-field>
+
+                    <div  fxLayout="row" >
+                        <div class="app-icon">
+                            <mat-icon matListIcon [fontIcon]="icon"></mat-icon>
+                        </div>
+                        <mat-form-field fxFlex>
+                                <input matInput type="text" id="icon" name="icon" formControlName="icon"  />
+                                <mat-placeholder>
+                                    <span translate>APP.EDIT.ICON.LABEL</span>
+                                </mat-placeholder>
+                        </mat-form-field>                        
+                    </div>
+  
+
+                    <mat-form-field>
+                        <input matInput type="text" id="copyrights" name="copyrights" formControlName="copyrights" />
+                        <mat-placeholder>
+                            <span translate>APP.EDIT.COPYRIGHTS.LABEL</span>
+                        </mat-placeholder>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <input matInput type="text" id="url" name="url" formControlName="url" />
+                        <mat-placeholder>
+                            <span translate>APP.EDIT.URL.LABEL</span>
+                        </mat-placeholder>
+                    </mat-form-field>
+
+                    <div fxLayout="row">
+                        <mat-form-field class="pip-full-width" style="margin-right: 16px">
+                            <input matInput type="text" id="minVer" name="minVer" formControlName="minVer" />
+                            <mat-placeholder>
+                                <span translate>APP.EDIT.MINVER.LABEL</span>
+                            </mat-placeholder>
+                        </mat-form-field>
+
+                        <mat-form-field class="pip-full-width">
+                            <input matInput type="text" id="maxVer" name="maxVer" formControlName="maxVer" />
+                            <mat-placeholder>
+                                <span translate>APP.EDIT.MAXVER.LABEL</span>
+                            </mat-placeholder>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </pip-document-content>
+    <pip-document-footer>
+
+        <pip-action-list>
+            <button mat-button class="pip-action-list-item" (click)="saveSubmit()" *ngIf="form.dirty" [disabled]="loading || form.invalid">
+                <mat-icon fontSet="webui" fontIcon="webui-check"></mat-icon>
+                <span class="pip-title">{{ 'APP.CREATE.BUTTON.SAVE.TEXT' | translate }}</span>
+            </button>
+            <button mat-button class="pip-action-list-item" (click)="onCancel()" *ngIf="form.dirty || !updateItem.id " [disabled]="loading">
+                <mat-icon fontSet="webui" fontIcon="webui-cross"></mat-icon>
+                <span class="pip-title">{{ 'APP.EDIT.BUTTON.CANCEL.TEXT' | translate }}</span>
+            </button>
+            <button mat-button class="pip-action-list-item" (click)="deleteSubmit()" [disabled]="loading" *ngIf="updateItem.id">
+                <mat-icon fontSet="webui" fontIcon="webui-trash"></mat-icon>
+                <span class="pip-title">{{ 'APP.EDIT.DELETE.TEXT' | translate }}</span>
+            </button>
+        </pip-action-list>
+    </pip-document-footer>
+</pip-document-layout>

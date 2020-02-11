@@ -1,0 +1,69 @@
+<pip-menu-layout [ngClass]="{'pip-single-content': isSingle$ | async}">
+  <div class="pip-menu" fxLayout="column">
+      <div class="scroll-container" fxLayout="column">
+          <iqs-application-list *ngIf="(updateState$ | async) != 'empty' && (updateState$ | async) != 'progress' || media.isMainActive('gt-sm')"
+                                [selectId]="selectId$ | async" [applications]="applications$ | async" [loading]="loading$ | async"
+                                [state]="updateState$ | async" (selectChange)="select($event)" (add)="initAdd()"
+                                [progressText]="'APP.LOADING' | translate" [emptyText]="'APP.EMPTY.TEXT' | translate"
+                                [emptySubText]="'APP.EMPTY.SUBTEXT' | translate" [newApplicationText]="'APP.CREATE.NEW.TITLE' | translate"
+                                [newApplicationSubText]="'APP.CREATE.NEW.SUBTITLE' | translate" [emptyStateActions]="emptyStateActions">
+          </iqs-application-list>
+          <pip-empty-state *ngIf="(updateState$ | async) == 'progress' && !media.isMainActive('gt-sm')">
+              <pip-empty-state-title [text]="'APP.LOADING' | translate" imageUrl="./assets/progress.svg"></pip-empty-state-title>
+              <div class="pip-progress">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              </div>
+          </pip-empty-state>
+
+          <pip-empty-state *ngIf="(updateState$ | async) == 'empty' && !media.isMainActive('gt-sm')">
+              <pip-empty-state-title [text]="'APP.EMPTY.TEXT' | translate" [subText]="'APP.EMPTY.SUBTEXT' | translate"
+                                     imageUrl="./assets/empty.svg"></pip-empty-state-title>
+              <pip-empty-state-actions [actions]="emptyStateActions"></pip-empty-state-actions>
+          </pip-empty-state>
+      </div>
+      <button mat-fab color="primary" class="pip-fab" (click)="initAdd()" *ngIf="(updateState$ | async) == 'view' || (updateState$ | async) == 'edit' || (updateState$ | async) == 'create'"
+              [disabled]="(loading$ | async) || (updateState$ | async) == 'edit' || (updateState$ | async) == 'create'">
+          <mat-icon aria-label="create">add</mat-icon>
+      </button>
+  </div>
+
+  <div class="pip-menu-container" [ngSwitch]="updateState$ | async">
+      <pip-document-layout *ngSwitchCase="'progress'">
+          <pip-document-content>
+              <pip-empty-state>
+                  <pip-empty-state-title [text]="'APP.LOADING' | translate" imageUrl="./assets/progress.svg"></pip-empty-state-title>
+                  <div class="pip-progress">
+                      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                  </div>
+              </pip-empty-state>
+          </pip-document-content>
+      </pip-document-layout>
+      <pip-document-layout *ngSwitchCase="'empty'">
+          <pip-document-content>
+              <pip-empty-state>
+                  <pip-empty-state-title [text]="'APP.EMPTY.TEXT' | translate" [subText]="'APP.EMPTY.SUBTEXT' | translate"
+                                         imageUrl="./assets/empty.svg"></pip-empty-state-title>
+                  <pip-empty-state-actions [actions]="emptyStateActions"></pip-empty-state-actions>
+              </pip-empty-state>
+          </pip-document-content>
+      </pip-document-layout>
+
+      <iqs-application-details *ngSwitchDefault [ln]="ln" [languages]="languages" 
+                            [application]="selectApplication$ | async" 
+                            [loading]="loading$ | async"
+                            [error]="error$ | async" 
+                              (changeLang)="changeLn($event)"
+                              (change)="change()" 
+                               (delete)="openDialog($event)"
+                              (cancel)="cancel()" (update)="update($event)">
+      </iqs-application-details>
+
+      <iqs-application-details *ngSwitchCase="'create'" [ln]="ln" [languages]="languages" [application]="emptyApplication" [loading]="loading$ | async"
+                              [error]="error$ | async" 
+                              (changeLang)="changeLn($event)"
+                              
+                              (cancel)="cancel()" (update)="create($event)">
+      </iqs-application-details>
+
+  </div>
+</pip-menu-layout>
