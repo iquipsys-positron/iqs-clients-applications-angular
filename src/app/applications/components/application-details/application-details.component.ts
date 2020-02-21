@@ -243,6 +243,10 @@ export class PipApplicationDetailsComponent implements OnInit, OnChanges, OnDest
     }
 
     public getErrorMessage(error: any): string {
-        return typeof error !== 'object' ? error : error.code ? this.translate.instant(error.code) : error.message;
+        const message = _.get(error, 'error.message');
+        if (message) { return message; }
+        const code = _.get(error, 'error.code');
+        if (code) { return this.translate.instant(code); }
+        return error;
     }
 }

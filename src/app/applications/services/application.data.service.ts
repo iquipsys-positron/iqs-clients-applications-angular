@@ -15,11 +15,6 @@ export class ApplicationDataService {
         private sessionConfig: IqsSessionConfigService
     ) { }
 
-    private handleError(response: Response) {
-        const error = response.json();
-        return Observable.throw(error);
-    }
-
     public apps(): Observable<any> {
 
         const url = this.sessionConfig.serverUrl + this.appRes;
@@ -29,8 +24,7 @@ export class ApplicationDataService {
             .pipe(
                 map(response => {
                     return response['data'];
-                }),
-                catchError(this.handleError)
+                })
             );
     }
 
@@ -38,26 +32,14 @@ export class ApplicationDataService {
         const url = this.sessionConfig.serverUrl + this.appRes + '/' + app.id;
         const request: any = {};
 
-        return this.http.put(url, app, request)
-            .pipe(
-                map(response => {
-                    return response;
-                }),
-                catchError(this.handleError)
-            );
+        return this.http.put(url, app, request);
     }
 
     public appCreate(app: Application): Observable<any> {
         const url = this.sessionConfig.serverUrl + this.appRes;
         const request: any = {};
 
-        return this.http.post(url, app, request)
-            .pipe(
-                map(response => {
-                    return response;
-                }),
-                catchError(this.handleError)
-            );
+        return this.http.post(url, app, request);
     }
 
     public appDelete(id: string): Observable<any> {
@@ -65,13 +47,7 @@ export class ApplicationDataService {
         const url = this.sessionConfig.serverUrl + this.appRes + '/' + id;
         const request: any = {};
 
-        return this.http.delete(url, request)
-            .pipe(
-                map(response => {
-                    return id;
-                }),
-                catchError(this.handleError)
-            );
+        return this.http.delete(url, request);
     }
 
 }

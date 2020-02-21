@@ -11,9 +11,9 @@
 .letter-icon.mat-list-icon {
     vertical-align: middle !important;
     text-align: center;
-    width: 40px!important;
-    height: 40px!important;
-    padding: 0!important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
     line-height: 40px;
     font-family: Roboto;
 }
@@ -23,5 +23,16 @@
 }
 
 .rm16 {
-    margin-right: 16px!important;
+    margin-right: 16px !important;
+}
+
+/* Style fixes */
+.mat-sidenav-content {
+    &>pip-main-content {
+        overflow: auto;
+
+        &>iqs-applications-container {
+            overflow: auto;
+        }
+    }
 }
